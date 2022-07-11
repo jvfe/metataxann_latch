@@ -1,0 +1,47 @@
+"""
+Predict protein-coding genes with prodigal
+"""
+
+import subprocess
+from pathlib import Path
+
+from latch import small_task
+from latch.types import LatchDir
+
+
+@small_task
+def prodigal(assembly_dir: LatchDir, sample_name: str, output_format: str) -> LatchDir:
+
+    # Assembly data
+    assembly_name = f"{sample_name}.contigs.fa"
+    assembly_fasta = Path(assembly_dir.local_path, assembly_name)
+
+    # A reference to our output.
+    output_dir_name = f"prodigal_results/{sample_name}/"
+    output_dir = Path(output_dir_name).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_file = output_dir.joinpath(f"{sample_name}.{output_format}")
+    output_proteins = output_dir.joinpath(f"{sample_name}.faa")
+    output_genes = output_dir.joinpath(f"{sample_name}.fna")
+    output_scores = output_dir.joinpath(f"{sample_name}.cds")
+
+    _prodigal_cmd = [
+        "/root/prodigal",
+        "-i",
+        str(assembly_fasta),
+        "-f",
+        output_format,
+        "-o",
+        str(output_file),
+        "-a",
+        str(output_proteins),
+        "-d",
+        str(output_genes),
+        "-s",
+        str(output_scores),
+    ]
+
+    subprocess.run(_prodigal_cmd)
+
+    return LatchDir(str(output_dir), f"latch:///{output_dir_name}")
