@@ -1,4 +1,4 @@
-from latch.types import LatchAuthor, LatchMetadata, LatchParameter
+from latch.types import LatchAuthor, LatchMetadata, LatchParameter, LatchRule
 
 METATAXANN_DOCS = LatchMetadata(
     display_name="MetaTaxAnn",
@@ -58,8 +58,11 @@ METATAXANN_DOCS.parameters = {
         description="Kaiju reference taxon names, 'names.dmp' file.",
     ),
     "prodigal_output_format": LatchParameter(
-        display_name="Output file format (gbk, gff or sco)",
+        display_name="Prodigal output file format",
         description="Specify main output file format (one of gbk, gff or sco).",
+        rules=[
+            LatchRule(regex="(gbk|gff|sco)", message="Must be gbk, gff, or sco")
+        ],
         section_title="Annotation",
     ),
 }
