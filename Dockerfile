@@ -36,6 +36,10 @@ ENV META_ENV /opt/conda/envs/metassembly/bin
 RUN ln -s $META_ENV/megahit /root/megahit
 RUN ln -s $META_ENV/metaquast.py /root/metaquast.py 
 
+# Install metabat2
+
+RUN conda install -y -c bioconda metabat2
+
 # STOP HERE:
 # The following lines are needed to ensure your build environement works
 # correctly with latch.

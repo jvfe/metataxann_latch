@@ -5,7 +5,7 @@ from latch.types import LatchDir, LatchFile
 
 from .docs import METATAXANN_DOCS
 from .kaiju import kaiju2krona_task, plot_krona_task, taxonomy_classification_task
-from .metassembly import megahit, metaquast
+from .metassembly import megahit, metabat2, metaquast
 from .prodigal import prodigal
 
 
@@ -95,10 +95,11 @@ def metataxann(
         min_contig_len=min_contig_len,
     )
     metassembly_results = metaquast(assembly_dir=assembly_dir, sample_name=sample_name)
+    binning_results = metabat2(assembly_dir=assembly_dir, sample_name=sample_name)
 
     annotation = prodigal(
         assembly_dir=assembly_dir,
         sample_name=sample_name,
         output_format=prodigal_output_format,
     )
-    return [krona_plot, metassembly_results, annotation]
+    return [krona_plot, metassembly_results, binning_results, annotation]

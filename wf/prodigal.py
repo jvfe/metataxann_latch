@@ -5,11 +5,11 @@ Predict protein-coding genes with prodigal
 import subprocess
 from pathlib import Path
 
-from latch import small_task
+from latch import medium_task
 from latch.types import LatchDir
 
 
-@small_task
+@medium_task
 def prodigal(assembly_dir: LatchDir, sample_name: str, output_format: str) -> LatchDir:
 
     # Assembly data
