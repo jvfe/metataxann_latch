@@ -4,7 +4,12 @@ from latch import workflow
 from latch.types import LatchDir, LatchFile
 
 from .docs import METATAXANN_DOCS
-from .kaiju import kaiju2krona_task, plot_krona_task, taxonomy_classification_task
+from .kaiju import (
+    kaiju2krona_task,
+    kaiju2table_task,
+    plot_krona_task,
+    taxonomy_classification_task,
+)
 from .metassembly import megahit, metabat2, metaquast
 from .prodigal import prodigal
 
@@ -17,6 +22,7 @@ def metataxann(
     kaiju_ref_nodes: LatchFile,
     kaiju_ref_names: LatchFile,
     sample_name: str = "metataxann_sample",
+    taxon_rank: str = "species",
     min_count: str = "2",
     k_min: str = "21",
     k_max: str = "141",
@@ -76,6 +82,13 @@ def metataxann(
         kaiju_ref_nodes=kaiju_ref_nodes,
         sample=sample_name,
     )
+    kaiju2table_out = kaiju2table_task(
+        kaiju_out=kaiju_out,
+        sample=sample_name,
+        kaiju_ref_nodes=kaiju_ref_nodes,
+        kaiju_ref_names=kaiju_ref_names,
+        taxon=taxon_rank,
+    )
     kaiju2krona_out = kaiju2krona_task(
         kaiju_out=kaiju_out,
         sample=sample_name,
@@ -102,4 +115,10 @@ def metataxann(
         sample_name=sample_name,
         output_format=prodigal_output_format,
     )
-    return [krona_plot, metassembly_results, binning_results, annotation]
+    return [
+        kaiju2table_out,
+        krona_plot,
+        metassembly_results,
+        binning_results,
+        annotation,
+    ]

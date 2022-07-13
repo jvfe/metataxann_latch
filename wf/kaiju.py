@@ -44,6 +44,39 @@ def taxonomy_classification_task(
 
 
 @small_task
+def kaiju2table_task(
+    kaiju_out: LatchFile,
+    kaiju_ref_nodes: LatchFile,
+    kaiju_ref_names: LatchFile,
+    sample: str,
+    taxon: str,
+) -> LatchFile:
+    """Convert Kaiju output to TSV format"""
+
+    output_name = f"{sample}_kaiju.tsv"
+    kaijutable_tsv = Path(output_name).resolve()
+
+    _kaiju2table_cmd = [
+        "kaiju2table",
+        "-t",
+        kaiju_ref_nodes.local_path,
+        "-n",
+        kaiju_ref_names.local_path,
+        "-r",
+        taxon,
+        "-p",
+        "-e",
+        "-o",
+        str(kaijutable_tsv),
+        kaiju_out.local_path,
+    ]
+
+    subprocess.run(_kaiju2table_cmd)
+
+    return LatchFile(str(kaijutable_tsv), f"latch:///kaiju/{output_name}")
+
+
+@small_task
 def kaiju2krona_task(
     kaiju_out: LatchFile,
     kaiju_ref_nodes: LatchFile,

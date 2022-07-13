@@ -57,12 +57,20 @@ METATAXANN_DOCS.parameters = {
         display_name="Kaiju reference database names",
         description="Kaiju reference taxon names, 'names.dmp' file.",
     ),
+    "taxon_rank": LatchParameter(
+        display_name="Taxonomic rank (kaiju2table)",
+        description="Taxonomic rank for summary table output (kaiju2table).",
+        rules=[
+            LatchRule(
+                regex="(superkingdom|phylum|class|order|family|genus|species)",
+                message="Must be one of superkingdom, phylum, class, order, family, genus or species",
+            )
+        ],
+    ),
     "prodigal_output_format": LatchParameter(
         display_name="Prodigal output file format",
         description="Specify main output file format (one of gbk, gff or sco).",
-        rules=[
-            LatchRule(regex="(gbk|gff|sco)", message="Must be gbk, gff, or sco")
-        ],
+        rules=[LatchRule(regex="(gbk|gff|sco)", message="Must be gbk, gff, or sco")],
         section_title="Annotation",
     ),
 }
