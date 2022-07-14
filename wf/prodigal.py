@@ -5,11 +5,11 @@ Predict protein-coding genes with prodigal
 import subprocess
 from pathlib import Path
 
-from latch import medium_task
+from latch import large_task
 from latch.types import LatchDir
 
 
-@medium_task
+@large_task
 def prodigal(assembly_dir: LatchDir, sample_name: str, output_format: str) -> LatchDir:
 
     # Assembly data
@@ -17,7 +17,7 @@ def prodigal(assembly_dir: LatchDir, sample_name: str, output_format: str) -> La
     assembly_fasta = Path(assembly_dir.local_path, assembly_name)
 
     # A reference to our output.
-    output_dir_name = f"prodigal_results/{sample_name}/"
+    output_dir_name = "prodigal_results"
     output_dir = Path(output_dir_name).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -44,4 +44,6 @@ def prodigal(assembly_dir: LatchDir, sample_name: str, output_format: str) -> La
 
     subprocess.run(_prodigal_cmd)
 
-    return LatchDir(str(output_dir), f"latch:///{output_dir_name}")
+    return LatchDir(
+        str(output_dir), f"latch:///metataxann/{sample_name}/{output_dir_name}"
+    )

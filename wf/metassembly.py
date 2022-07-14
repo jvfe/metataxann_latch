@@ -20,7 +20,7 @@ def megahit(
     k_step: str,
     min_contig_len: str,
 ) -> LatchDir:
-    output_dir_name = f"MEGAHIT-{sample_name}"
+    output_dir_name = "MEGAHIT"
     output_dir = Path(output_dir_name).resolve()
     _megahit_cmd = [
         "/root/megahit",
@@ -46,7 +46,9 @@ def megahit(
 
     subprocess.run(_megahit_cmd)
 
-    return LatchDir(str(output_dir), f"latch:///{output_dir_name}")
+    return LatchDir(
+        str(output_dir), f"latch:///metataxann/{sample_name}/{output_dir_name}"
+    )
 
 
 @small_task
@@ -58,7 +60,7 @@ def metaquast(
     assembly_name = f"{sample_name}.contigs.fa"
     assembly_fasta = Path(assembly_dir.local_path, assembly_name)
 
-    output_dir_name = f"MetaQuast_{sample_name}"
+    output_dir_name = "MetaQuast"
     output_dir = Path(output_dir_name).resolve()
 
     _metaquast_cmd = [
@@ -76,7 +78,9 @@ def metaquast(
 
     subprocess.run(_metaquast_cmd)
 
-    return LatchDir(str(output_dir), f"latch:///{output_dir_name}")
+    return LatchDir(
+        str(output_dir), f"latch:///metataxann/{sample_name}/{output_dir_name}"
+    )
 
 
 @large_task
@@ -102,4 +106,4 @@ def metabat2(
 
     subprocess.run(_metabat_cmd)
 
-    return LatchDir(str(output_dir), f"latch:///METABAT/")
+    return LatchDir(str(output_dir), f"latch:///metataxann/{sample_name}/METABAT/")
