@@ -38,8 +38,6 @@ Reads are assigned to taxa by using a reference database
 of protein sequences.
 Read more about it [here](https://github.com/bioinformatics-centre/kaiju)
 
-Kaiju paper: https://doi.org/10.1038/ncomms11257
-
 ---
 
 ## Prodigal
