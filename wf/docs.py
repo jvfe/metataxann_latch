@@ -2,12 +2,12 @@ from latch.types import LatchAuthor, LatchMetadata, LatchParameter, LatchRule
 
 METATAXANN_DOCS = LatchMetadata(
     display_name="MetaTaxAnn",
-    documentation="https://github.com/jvfe/metassembly_latch/blob/main/README.md",
+    documentation="https://github.com/jvfe/metataxann_latch/blob/main/README.md",
     author=LatchAuthor(
         name="jvfe",
         github="https://github.com/jvfe",
     ),
-    repository="https://github.com/jvfe/metassembly_latch",
+    repository="https://github.com/jvfe/metataxann_latch",
     license="MIT",
 )
 
