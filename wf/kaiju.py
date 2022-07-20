@@ -8,6 +8,8 @@ from pathlib import Path
 from latch import large_task, small_task
 from latch.types import LatchFile
 
+from .types import TaxonRank
+
 
 @large_task
 def taxonomy_classification_task(
@@ -51,7 +53,7 @@ def kaiju2table_task(
     kaiju_ref_nodes: LatchFile,
     kaiju_ref_names: LatchFile,
     sample: str,
-    taxon: str,
+    taxon: TaxonRank,
 ) -> LatchFile:
     """Convert Kaiju output to TSV format"""
 

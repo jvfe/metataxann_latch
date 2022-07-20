@@ -12,6 +12,7 @@ from .kaiju import (
 )
 from .metassembly import megahit, metabat2, metaquast
 from .prodigal import prodigal
+from .types import ProdigalOutput, TaxonRank
 
 
 @workflow(METATAXANN_DOCS)
@@ -22,13 +23,13 @@ def metataxann(
     kaiju_ref_nodes: LatchFile,
     kaiju_ref_names: LatchFile,
     sample_name: str = "metataxann_sample",
-    taxon_rank: str = "species",
+    taxon_rank: TaxonRank = TaxonRank.species,
     min_count: str = "2",
     k_min: str = "21",
     k_max: str = "141",
     k_step: str = "12",
     min_contig_len: str = "200",
-    prodigal_output_format: str = "gbk",
+    prodigal_output_format: ProdigalOutput = ProdigalOutput.gbk,
 ) -> List[Union[LatchFile, LatchDir]]:
     """Metagenomic assembly, binning and annotation
 

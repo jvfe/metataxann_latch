@@ -8,9 +8,13 @@ from pathlib import Path
 from latch import large_task
 from latch.types import LatchDir
 
+from .types import ProdigalOutput
+
 
 @large_task
-def prodigal(assembly_dir: LatchDir, sample_name: str, output_format: str) -> LatchDir:
+def prodigal(
+    assembly_dir: LatchDir, sample_name: str, output_format: ProdigalOutput
+) -> LatchDir:
 
     # Assembly data
     assembly_name = f"{sample_name}.contigs.fa"
