@@ -25,7 +25,7 @@ def prodigal(
     output_dir = Path(output_dir_name).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_file = output_dir.joinpath(f"{sample_name}.{output_format}")
+    output_file = output_dir.joinpath(f"{sample_name}.{output_format.value}")
     output_proteins = output_dir.joinpath(f"{sample_name}.faa")
     output_genes = output_dir.joinpath(f"{sample_name}.fna")
     output_scores = output_dir.joinpath(f"{sample_name}.cds")
@@ -35,7 +35,7 @@ def prodigal(
         "-i",
         str(assembly_fasta),
         "-f",
-        output_format,
+        output_format.value,
         "-o",
         str(output_file),
         "-a",

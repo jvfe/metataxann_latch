@@ -67,7 +67,7 @@ def kaiju2table_task(
         "-n",
         kaiju_ref_names.local_path,
         "-r",
-        taxon,
+        taxon.value,
         "-p",
         "-e",
         "-o",
