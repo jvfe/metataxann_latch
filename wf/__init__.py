@@ -1,6 +1,7 @@
 from typing import List, Union
 
 from latch import workflow
+from latch.resources.launch_plan import LaunchPlan
 from latch.types import LatchDir, LatchFile
 
 from .docs import METATAXANN_DOCS
@@ -149,3 +150,26 @@ def metataxann(
         binning_results,
         annotation,
     ]
+
+
+LaunchPlan(
+    metataxann,  # workflow name
+    "Example Metagenome (Crohn's disease gut microbiome)",  # name of test data
+    {
+        "read1": LatchFile("s3://latch-public/test-data/4318/SRR579292_1.fastq"),
+        "read2": LatchFile("s3://latch-public/test-data/4318/SRR579292_2.fastq"),
+        "kaiju_ref_db": LatchFile(
+            "s3://latch-public/test-data/4318/kaiju_db_plasmids.fmi"
+        ),
+        "kaiju_ref_nodes": LatchFile("s3://latch-public/test-data/4318/nodes.dmp"),
+        "kaiju_ref_names": LatchFile("s3://latch-public/test-data/4318/names.dmp"),
+        "sample_name": "SRR579292",
+        "taxon_rank": TaxonRank.species,
+        "min_count": "2",
+        "k_min": "21",
+        "k_max": "141",
+        "k_step": "12",
+        "min_contig_len": "200",
+        "prodigal_output_format": ProdigalOutput.gff,
+    },
+)
