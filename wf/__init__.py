@@ -16,6 +16,75 @@ from .prodigal import prodigal
 from .types import ProdigalOutput, TaxonRank
 
 
+@workflow
+def tax_classification(
+    read1: LatchFile,
+    read2: LatchFile,
+    kaiju_ref_db: LatchFile,
+    kaiju_ref_nodes: LatchFile,
+    kaiju_ref_names: LatchFile,
+    sample_name: str,
+    taxon_rank: TaxonRank,
+) -> List[LatchFile]:
+    kaiju_out = taxonomy_classification_task(
+        read1=read1,
+        read2=read2,
+        kaiju_ref_db=kaiju_ref_db,
+        kaiju_ref_nodes=kaiju_ref_nodes,
+        sample=sample_name,
+    )
+    kaiju2table_out = kaiju2table_task(
+        kaiju_out=kaiju_out,
+        sample=sample_name,
+        kaiju_ref_nodes=kaiju_ref_nodes,
+        kaiju_ref_names=kaiju_ref_names,
+        taxon=taxon_rank,
+    )
+    kaiju2krona_out = kaiju2krona_task(
+        kaiju_out=kaiju_out,
+        sample=sample_name,
+        kaiju_ref_nodes=kaiju_ref_nodes,
+        kaiju_ref_names=kaiju_ref_names,
+    )
+    krona_plot = plot_krona_task(krona_txt=kaiju2krona_out, sample=sample_name)
+
+    return [kaiju2table_out, krona_plot]
+
+
+@workflow
+def metassembly(
+    read1: LatchFile,
+    read2: LatchFile,
+    sample_name: str,
+    min_count: str,
+    k_min: str,
+    k_max: str,
+    k_step: str,
+    min_contig_len: str,
+    prodigal_output_format: ProdigalOutput,
+) -> List[Union[LatchFile, LatchDir]]:
+
+    assembly_dir = megahit(
+        read_1=read1,
+        read_2=read2,
+        sample_name=sample_name,
+        min_count=min_count,
+        k_min=k_min,
+        k_max=k_max,
+        k_step=k_step,
+        min_contig_len=min_contig_len,
+    )
+    metassembly_results = metaquast(assembly_dir=assembly_dir, sample_name=sample_name)
+    binning_results = metabat2(assembly_dir=assembly_dir, sample_name=sample_name)
+    ann = prodigal(
+        assembly_dir=assembly_dir,
+        sample_name=sample_name,
+        output_format=prodigal_output_format,
+    )
+
+    return [metassembly_results, binning_results, ann]
+
+
 @workflow(METATAXANN_DOCS)
 def metataxann(
     read1: LatchFile,
@@ -103,52 +172,31 @@ def metataxann(
     and translation initiation site identification.
     BMC Bioinformatics 11, 119 (2010). https://doi.org/10.1186/1471-2105-11-119
     """
-    kaiju_out = taxonomy_classification_task(
+    tax = tax_classification(
         read1=read1,
         read2=read2,
         kaiju_ref_db=kaiju_ref_db,
         kaiju_ref_nodes=kaiju_ref_nodes,
-        sample=sample_name,
-    )
-    kaiju2table_out = kaiju2table_task(
-        kaiju_out=kaiju_out,
-        sample=sample_name,
-        kaiju_ref_nodes=kaiju_ref_nodes,
         kaiju_ref_names=kaiju_ref_names,
-        taxon=taxon_rank,
+        sample_name=sample_name,
+        taxon_rank=taxon_rank,
     )
-    kaiju2krona_out = kaiju2krona_task(
-        kaiju_out=kaiju_out,
-        sample=sample_name,
-        kaiju_ref_nodes=kaiju_ref_nodes,
-        kaiju_ref_names=kaiju_ref_names,
-    )
-    krona_plot = plot_krona_task(krona_txt=kaiju2krona_out, sample=sample_name)
 
-    assembly_dir = megahit(
-        read_1=read1,
-        read_2=read2,
+    meta_ann = metassembly(
+        read1=read1,
+        read2=read2,
         sample_name=sample_name,
         min_count=min_count,
         k_min=k_min,
         k_max=k_max,
         k_step=k_step,
         min_contig_len=min_contig_len,
+        prodigal_output_format=prodigal_output_format,
     )
-    metassembly_results = metaquast(assembly_dir=assembly_dir, sample_name=sample_name)
-    binning_results = metabat2(assembly_dir=assembly_dir, sample_name=sample_name)
 
-    annotation = prodigal(
-        assembly_dir=assembly_dir,
-        sample_name=sample_name,
-        output_format=prodigal_output_format,
-    )
     return [
-        kaiju2table_out,
-        krona_plot,
-        metassembly_results,
-        binning_results,
-        annotation,
+        tax,
+        meta_ann,
     ]
 
 
