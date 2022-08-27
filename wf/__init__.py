@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Tuple, Union
 
 from latch import workflow
 from latch.resources.launch_plan import LaunchPlan
@@ -25,7 +25,7 @@ def tax_classification(
     kaiju_ref_names: LatchFile,
     sample_name: str,
     taxon_rank: TaxonRank,
-) -> List[LatchFile]:
+) -> Tuple[LatchFile, LatchFile]:
     kaiju_out = taxonomy_classification_task(
         read1=read1,
         read2=read2,
@@ -48,7 +48,7 @@ def tax_classification(
     )
     krona_plot = plot_krona_task(krona_txt=kaiju2krona_out, sample=sample_name)
 
-    return [kaiju2table_out, krona_plot]
+    return kaiju2table_out, krona_plot
 
 
 @workflow
@@ -62,7 +62,7 @@ def metassembly(
     k_step: str,
     min_contig_len: str,
     prodigal_output_format: ProdigalOutput,
-) -> List[Union[LatchFile, LatchDir]]:
+) -> Tuple[LatchDir, LatchDir, LatchDir]:
 
     assembly_dir = megahit(
         read_1=read1,
@@ -82,7 +82,7 @@ def metassembly(
         output_format=prodigal_output_format,
     )
 
-    return [metassembly_results, binning_results, ann]
+    return metassembly_results, binning_results, ann
 
 
 @workflow(METATAXANN_DOCS)
@@ -172,7 +172,7 @@ def metataxann(
     and translation initiation site identification.
     BMC Bioinformatics 11, 119 (2010). https://doi.org/10.1186/1471-2105-11-119
     """
-    tax = tax_classification(
+    kaiju2table_out, krona_plot = tax_classification(
         read1=read1,
         read2=read2,
         kaiju_ref_db=kaiju_ref_db,
@@ -182,7 +182,7 @@ def metataxann(
         taxon_rank=taxon_rank,
     )
 
-    meta_ann = metassembly(
+    metassembly_results, binning_results, ann = metassembly(
         read1=read1,
         read2=read2,
         sample_name=sample_name,
@@ -194,10 +194,7 @@ def metataxann(
         prodigal_output_format=prodigal_output_format,
     )
 
-    return [
-        tax,
-        meta_ann,
-    ]
+    return [kaiju2table_out, krona_plot, metassembly_results, binning_results, ann]
 
 
 LaunchPlan(
